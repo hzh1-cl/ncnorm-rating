@@ -1,0 +1,95 @@
+<!--selector.html-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Select a Group</title>
+    </head>
+    <body>
+        <button id="randomBtn">Select</button>
+        <button id="resetBtn">Reset</button>
+
+        <div id="counters" style="margin: 20px 0;"></div>
+        <div>Total remaining: <span id="totalCounter">6</span></div>
+        <div id="urlDisplay" style="margin-top: 10px;"></div>
+        <div id="status" style="color: red;"></div>
+        <script>
+            let groups = [];
+            let maxVisits = 3;
+            const randomBtn = document.getElementById('randomBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const urlDisplay = document.getElementById('urlDisplay');
+            const totalCounter = document.getElementById('totalCounter');
+            const statusDiv = document.getElementById('status');
+
+            //load and parse groups.txt
+            async function loadGroups() {
+                try {
+                    const response = await fetch('groups.txt');
+                    const text = await response.text();
+                    const lines = text.split("\n").filter(line => line.trim() !== '');
+
+                    groups = lines.map(line =>{
+                        const trimmedLine = line.trim();
+                        const parts = trimmedLine.split('\t');
+
+                        if (parts.length < 2) {
+                            console.error('Invalid line format:', line);
+                            return null;
+                        }
+
+                        return {
+                            name: parts[0].trim(),
+                            url: parts.slice(1).join('\t').trim(), // handle urls containing tabs
+                            remaining: maxVisits,
+                            originalUrl: parts.slice(1).join('\t').trim()
+                        };
+                    }).filter(group => group !== null);
+
+                    updateDisplay();
+                    randomBtn.disabled = false;
+                    statusDiv.textContent = '';
+                } catch (error) {
+                    statusDiv.textContent = 'Error loading groups.txt - make sure it exists and use TAB separation.';
+                    console.error('Error loading groups:', error);
+                }
+            }
+
+            function updateDisplay() {
+                const countersDiv = document.getElementById('counters');
+                countersDiv.innerHTML = groups.map(group => 
+                    `${group.name}: <span>${group.remaining}</span>`
+                ).join('<br>');
+
+                const total = groups.reduce((sum, group) => sum + group.remaining, 0);
+                totalCounter.textContent = total;
+                randomBtn.disabled = total === 0;
+            }
+
+            function selectRandomGroup() {
+                const eligibleGroups = groups.filter(group => group.remaining > 0);
+                if (eligibleGroups.length === 0) return;
+
+                const randomIndex = Math.floor(Math.random() * eligibleGroups.length);
+                const selectedGroup = eligibleGroups[randomIndex];
+
+                selectedGroup.remaining--;
+                urlDisplay.textContent = `Selected URL: ${selectedGroup.url}`;
+                updateDisplay();
+            }
+
+            function resetCounters() {
+                groups.forEach(group => {
+                    group.remaining = maxVisits;
+                    group.url = group.originalUrl;
+                });
+                urlDisplay.textContent = "";
+                updateDisplay();
+            }
+
+            //Event listerns and initialization
+            randomBtn.addEventListener('click', selectRandomGroup);
+            resetBtn.addEventListener('click', resetCounters);
+            window.addEventListener('load', loadGroups);
+        </script>
+    </body>
+</html>
