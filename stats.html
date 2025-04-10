@@ -1,0 +1,90 @@
+<!--stats.html-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Selection Statistics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="selector.html" class="nav-button">Back to Selector</a>
+    <h2>Selection Statistics</h2>
+
+    <div id="statsContainer"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const statsContainer = document.getElementById('statsContainer');
+            const trackingData = JSON.parse(localStorage.getItem('groupTracking')) || {};
+
+            if (!trackingData.groups) {
+                statsContainer.innerHTML = "<p>No selection data available.</p>";
+                return;
+            }
+
+            let html = `
+                <p>Total selections made: ${trackingData.totalSelections}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Times Selected</th>
+                            <th>Remaining</th>
+                            <th>Last Selected</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            trackingData.groups.forEach(group => {
+                html += `
+                    <tr>
+                        <td>${group.name}</td>
+                        <td>${group.selectedCount}</td>
+                        <td>${group.remaining}</td>
+                        <td>${group.lastSelected ? new Date(group.lastSelected).toLocaleString() : 'Never'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            statsContainer.innerHTML = html;
+        });
+    </script>
+</body>
+
+</html>

@@ -71,10 +71,22 @@
         #urlDisplay a:hover {
             text-decoration: underline;
         }
+
+        .nav-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
+    <a href="stats.html" class="nav-button">View Statistics</a>
     <div class="button-container">
         <button id="randomBtn">Select</button>
         <button id="resetBtn">Reset</button>
@@ -92,77 +104,81 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Embedded group data
             const groupsData = {
                 group1: "https://farm.pcibex.net/r/oyxZUa/",
                 group2: "https://farm.pcibex.net/r/IXWmsM/"
             };
 
-            let groups = [];
-            const maxVisits = 3; // Fixed variable name (no trailing 's')
+            // Load or initialize tracking data
+            let trackingData = JSON.parse(localStorage.getItem('groupTracking')) || {
+                groups: Object.entries(groupsData).map(([name, url]) => ({
+                    name,
+                    url,
+                    remaining: 3,
+                    selectedCount: 0,
+                    lastSelected: null
+                })),
+                totalSelections: 0
+            };
 
             const elements = {
                 randomBtn: document.getElementById('randomBtn'),
                 resetBtn: document.getElementById('resetBtn'),
                 urlDisplay: document.getElementById('urlDisplay'),
                 totalCounter: document.getElementById('totalCounter'),
-                statusDiv: document.getElementById('status'),
                 countersDiv: document.getElementById('counters')
             };
 
-            // Initialize groups properly
-            function initializeGroups() {
-                groups = Object.entries(groupsData).map(([name, url]) => ({
-                    name,
-                    url,
-                    remaining: maxVisits,
-                    originalUrl: url
-                }));
-                console.log('Initial groups:', groups); // Debug log
+            function updateStorage() {
+                localStorage.setItem('groupTracking', JSON.stringify(trackingData));
                 updateDisplay();
             }
 
             function updateDisplay() {
-                elements.countersDiv.innerHTML = groups.map(group =>
+                elements.countersDiv.innerHTML = trackingData.groups.map(group =>
                     `${group.name}: ${group.remaining}`
                 ).join('<br>');
 
-                const total = groups.reduce((sum, group) => sum + group.remaining, 0);
-                elements.totalCounter.textContent = total;
-                elements.randomBtn.disabled = total === 0;
+                elements.totalCounter.textContent =
+                    trackingData.groups.reduce((sum, group) => sum + group.remaining, 0);
             }
 
             function selectRandomGroup() {
-                const eligibleGroups = groups.filter(group => group.remaining > 0);
-                console.log('Eligible groups:', eligibleGroups); // Debug log
-
-                if (eligibleGroups.length === 0) {
-                    elements.urlDisplay.textContent = "All groups have been used!";
-                    return;
-                }
+                const eligibleGroups = trackingData.groups.filter(group => group.remaining > 0);
+                if (eligibleGroups.length === 0) return;
 
                 const randomIndex = Math.floor(Math.random() * eligibleGroups.length);
                 const selectedGroup = eligibleGroups[randomIndex];
+
                 selectedGroup.remaining--;
+                selectedGroup.selectedCount++;
+                selectedGroup.lastSelected = new Date().toISOString();
+                trackingData.totalSelections++;
 
-                // create clickable link
-                elements.urlDisplay.innerHTML = `请点击该链接进入实验: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
-                updateDisplay();
+                elements.urlDisplay.innerHTML =
+                    `实验链接: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
+                elements.randomBtn.disabled = true;
+                updateStorage();
             }
-
-
 
             function resetCounters() {
-                groups.forEach(group => {
-                    group.remaining = maxVisits;
-                });
+                trackingData = {
+                    groups: Object.entries(groupsData).map(([name, url]) => ({
+                        name,
+                        url,
+                        remaining: 3,
+                        selectedCount: 0,
+                        lastSelected: null
+                    })),
+                    totalSelections: 0
+                };
                 elements.urlDisplay.innerHTML = "";
-                updateDisplay();
-                console.log('Reset groups:', groups); // Debug log
+                elements.randomBtn.disabled = false;
+                updateStorage();
             }
 
-            // Initialize and set up event listeners
-            initializeGroups();
+            // Initial setup
+            updateDisplay();
             elements.randomBtn.addEventListener('click', selectRandomGroup);
             elements.resetBtn.addEventListener('click', resetCounters);
         });
