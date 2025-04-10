@@ -146,7 +146,7 @@
                 const selectedGroup = eligibleGroups[randomIndex];
 
                 selectedGroup.remaining--;
-                urlDisplay.innerHTML = `请点击该链接进入实验: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
+                urlDisplay.textContent = `请点击该链接进入实验: ${selectedGroup.url}`;
                 updateDisplay();
             }
 
