@@ -61,6 +61,16 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 0;
         }
+
+        #urlDisplay a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #urlDisplay a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -68,9 +78,10 @@
     <div class="button-container">
         <button id="randomBtn">Select</button>
         <button id="resetBtn">Reset</button>
+        <div id="urlDisplay"></div>
     </div>
 
-    <div id="urlDisplay"></div>
+
 
     <div class="counters-container">
         <div id="counters"></div>
@@ -133,15 +144,19 @@
                 const randomIndex = Math.floor(Math.random() * eligibleGroups.length);
                 const selectedGroup = eligibleGroups[randomIndex];
                 selectedGroup.remaining--;
-                elements.urlDisplay.textContent = `请复制该链接进入实验: ${selectedGroup.url}`;
+
+                // create clickable link
+                elements.urlDisplay.innerHTML = `请点击该链接进入实验: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
                 updateDisplay();
             }
+
+
 
             function resetCounters() {
                 groups.forEach(group => {
                     group.remaining = maxVisits;
                 });
-                elements.urlDisplay.textContent = "";
+                elements.urlDisplay.innerHTML = "";
                 updateDisplay();
                 console.log('Reset groups:', groups); // Debug log
             }
