@@ -106,13 +106,15 @@
         async function loadGroups() {
             try {
                 const response = await fetch('groups.txt');
+                if (!response.ok) throw new Error("Failed to load groups.txt");
                 const text = await response.text();
 
                 // parse the text file
                 groups = text.split("\n")
                     .filter(line => line.trim()) // remove empty lines
                     .map(line => {
-                        const [name, url] = line.trim().split('\t');
+                        const [name, ...urlParts] = line.trim().split(/\s+/);
+                        const url = urlParts.join(' ');
                         return {
                             name: name.trim();
                             url: url.trim();
@@ -121,12 +123,13 @@
                         };
                     });
 
+                if (groups.length === 0) throw new Error("No valid groups found!");
                 updateDisplay();
                 randomBtn.disabled = false;
                 statusDiv.textContent = '';
             } catch (error) {
-                statusDiv.textContent = 'Error loading data！';
-                console.error('Error loading groups:', error);
+                statusDiv.textContent = 'Error loading data:' + error.message;
+                console.error('Error:', error);
             }
         }
 
@@ -143,11 +146,13 @@
 
         function selectRandomGroup() {
             const eligibleGroups = groups.filter(group => group.remaining > 0);
-            if (eligibleGroups.length === 0) return;
+            if (eligibleGroups.length === 0) {
+                urlDisplay.textContent = "All groups have been selected!";
+                return;
+            }
 
             const randomIndex = Math.floor(Math.random() * eligibleGroups.length);
             const selectedGroup = eligibleGroups[randomIndex];
-
             selectedGroup.remaining--;
             urlDisplay.textContent = `请复制该链接进入实验: ${selectedGroup.url}`;
             updateDisplay();
