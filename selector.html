@@ -105,7 +105,7 @@
             //load and parse groups.txt
             async function loadGroups() {
                 try {
-                    const response = await fetch('groups.txt');
+                    const response = await fetch('./groups.txt');
                     const text = await response.text();
                     const lines = text.split("\n").filter(line => line.trim() !== '');
 
@@ -154,7 +154,7 @@
                 const selectedGroup = eligibleGroups[randomIndex];
 
                 selectedGroup.remaining--;
-                urlDisplay.innerHTML = `Selected URL: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
+                urlDisplay.innerHTML = `请点击该链接进入实验: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
                 updateDisplay();
             }
 
