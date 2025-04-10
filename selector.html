@@ -154,7 +154,7 @@
                 const selectedGroup = eligibleGroups[randomIndex];
 
                 selectedGroup.remaining--;
-                urlDisplay.textContent = `Selected URL: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
+                urlDisplay.innerHTML = `Selected URL: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
                 updateDisplay();
             }
 
