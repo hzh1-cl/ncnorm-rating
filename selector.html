@@ -94,6 +94,12 @@
     <div id="status"></div>
 
     <script>
+        // embedded group data
+        const groupsData = {
+            group1: "https://farm.pcibex.net/r/oyxZUa/",
+            group2: "https://farm.pcibex.net/r/IXWmsM/"
+        };
+
         let groups = [];
         let maxVisits = 3;
         const randomBtn = document.getElementById('randomBtn');
@@ -102,34 +108,20 @@
         const totalCounter = document.getElementById('totalCounter');
         const statusDiv = document.getElementById('status');
 
-        //load and parse groups.txt
-        async function loadGroups() {
+        function initializeGroups() {
             try {
-                const response = await fetch('groups.txt');
-                if (!response.ok) throw new Error("Failed to load groups.txt");
-                const text = await response.text();
-
-                // parse the text file
-                groups = text.split("\n")
-                    .filter(line => line.trim()) // remove empty lines
-                    .map(line => {
-                        const [name, ...urlParts] = line.trim().split(/\s+/);
-                        const url = urlParts.join(' ');
-                        return {
-                            name: name.trim();
-                            url: url.trim();
-                            remaining: maxVisits;
-                            originalUrl: url.trim()
-                        };
-                    });
-
-                if (groups.length === 0) throw new Error("No valid groups found!");
+                groups = Object.entries(groupsData).map(([name, url]) => ({
+                    name,
+                    url,
+                    remaining: maxVisits,
+                    originalUrl: url
+                }));
                 updateDisplay();
                 randomBtn.disabled = false;
                 statusDiv.textContent = '';
             } catch (error) {
-                statusDiv.textContent = 'Error loading data:' + error.message;
-                console.error('Error:', error);
+                statusDiv.textContent = 'Error initializing groups!';
+                console.error("Initialization error:", error);
             }
         }
 
