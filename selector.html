@@ -109,7 +109,6 @@
                 try {
                     const response = await fetch('./groups.json');
                     const text = await response.json();
-                    const lines = text.split("\n").filter(line => line.trim() !== '');
                     
                     groups = Object.entries(data).map(([name, url]) => ({
                         name,
@@ -122,7 +121,7 @@
                     randomBtn.disabled = false;
                     statusDiv.textContent = '';
                 } catch (error) {
-                    statusDiv.textContent = 'Error loading groups.json.';
+                    statusDiv.textContent = 'Error loading data！';
                     console.error('Error loading groups:', error);
                 }
             }
@@ -146,7 +145,7 @@
                 const selectedGroup = eligibleGroups[randomIndex];
 
                 selectedGroup.remaining--;
-                urlDisplay.textContent = `请点击该链接进入实验: ${selectedGroup.url}`;
+                urlDisplay.textContent = `请复制该链接进入实验: ${selectedGroup.url}`;
                 updateDisplay();
             }
 
