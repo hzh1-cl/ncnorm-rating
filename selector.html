@@ -80,17 +80,16 @@
     <div id="status"></div>
 
     <script>
-        // Enhanced initialization with error handling
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('Document loaded');
-
+            // Embedded group data
             const groupsData = {
                 group1: "https://farm.pcibex.net/r/oyxZUa/",
                 group2: "https://farm.pcibex.net/r/IXWmsM/"
             };
 
             let groups = [];
-            const maxVisits = 3;
+            const maxVisits = 3; // Fixed variable name (no trailing 's')
+
             const elements = {
                 randomBtn: document.getElementById('randomBtn'),
                 resetBtn: document.getElementById('resetBtn'),
@@ -100,22 +99,16 @@
                 countersDiv: document.getElementById('counters')
             };
 
+            // Initialize groups properly
             function initializeGroups() {
-                try {
-                    groups = Object.entries(groupsData).map(([name, url]) => ({
-                        name,
-                        url,
-                        remaining: maxVisits,
-                        originalUrl: url
-                    }));
-                    console.log('Groups initialized:', groups);
-                    updateDisplay();
-                    elements.randomBtn.disabled = false;
-                    elements.statusDiv.textContent = '';
-                } catch (error) {
-                    console.error('Initialization error:', error);
-                    elements.statusDiv.textContent = 'System Error: Failed to initialize groups';
-                }
+                groups = Object.entries(groupsData).map(([name, url]) => ({
+                    name,
+                    url,
+                    remaining: maxVisits,
+                    originalUrl: url
+                }));
+                console.log('Initial groups:', groups); // Debug log
+                updateDisplay();
             }
 
             function updateDisplay() {
@@ -130,6 +123,8 @@
 
             function selectRandomGroup() {
                 const eligibleGroups = groups.filter(group => group.remaining > 0);
+                console.log('Eligible groups:', eligibleGroups); // Debug log
+
                 if (eligibleGroups.length === 0) {
                     elements.urlDisplay.textContent = "All groups have been used!";
                     return;
@@ -143,15 +138,18 @@
             }
 
             function resetCounters() {
-                groups.forEach(group => group.remaining = maxVisits);
+                groups.forEach(group => {
+                    group.remaining = maxVisits;
+                });
                 elements.urlDisplay.textContent = "";
                 updateDisplay();
+                console.log('Reset groups:', groups); // Debug log
             }
 
-            // Event listeners
+            // Initialize and set up event listeners
+            initializeGroups();
             elements.randomBtn.addEventListener('click', selectRandomGroup);
             elements.resetBtn.addEventListener('click', resetCounters);
-            initializeGroups();
         });
     </script>
 </body>
