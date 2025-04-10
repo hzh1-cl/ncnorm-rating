@@ -44,7 +44,7 @@
             #counters {
                 text-align: center;
                 font-size: 18px;
-                margin: 20px 0;
+                margin-bottom: 10px;
             }
             #urlDisplay {
                 text-align: center;
@@ -86,13 +86,15 @@
             <button id="resetBtn">Reset</button>
         </div>
         
+        <div id="urlDisplay"></div>
+        <div id="status"></div>
+
         <div class="counters-container">
             <div id="counters"></div>
             <div>Total remaining: <span id="'totalCounter">6</span></div>
         </div>
 
-        <div id="urlDisplay"></div>
-        <div id="status"></div>
+        
         <script>
             let groups = [];
             let maxVisits = 3;
@@ -105,7 +107,7 @@
             //load and parse groups.txt
             async function loadGroups() {
                 try {
-                    const response = await fetch('groups.json');
+                    const response = await fetch('./groups.json');
                     const text = await response.json();
                     const lines = text.split("\n").filter(line => line.trim() !== '');
                     
@@ -120,7 +122,7 @@
                     randomBtn.disabled = false;
                     statusDiv.textContent = '';
                 } catch (error) {
-                    statusDiv.textContent = 'Error loading groups.txt - make sure it exists and use TAB separation.';
+                    statusDiv.textContent = 'Error loading groups.json.';
                     console.error('Error loading groups:', error);
                 }
             }
