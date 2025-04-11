@@ -3,22 +3,72 @@
 <head>
     <title>Selection Statistics</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .nav-button { 
-            padding: 10px 20px; background-color: #007bff; 
-            color: white; text-decoration: none; border-radius: 5px; 
-            margin-bottom: 20px; display: inline-block; 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            text-align: center; /* Center everything */
         }
-        .hidden { display: none; }
+
+        .nav-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reset-container {
+            margin-top: 20px;
+        }
+
+        .reset-button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .reset-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
-    <a href="selector.html?role=admin" class="nav-button">Back to Admin</a>
     <h2>Selection Statistics</h2>
-    <div id="statsContainer"></div>
+    
+    <div class="stats-container">
+        <a href="stats.html" class="nav-button">View Statistics</a>
+        <div class="reset-container">
+            <button id="resetBtn" class="reset-button">Reset</button>
+        </div>
+        <div id="statsContainer"></div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
