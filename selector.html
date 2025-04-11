@@ -5,7 +5,9 @@
 <head>
     <title>Select a Group</title>
     <style>
-        /* Optimized CSS */
+        /* Added hidden class */
+        .hidden { display: none; }
+        
         body {
             font-family: 'Times New Roman', Times, serif;
             display: flex;
@@ -43,7 +45,6 @@
             text-align: center;
             font-size: 16px;
             margin: 15px 0 80px;
-            /* Bottom margin for counter space */
             padding: 0 20px;
             position: relative;
             z-index: 1;
@@ -86,24 +87,23 @@
 </head>
 
 <body>
-    <a href="stats.html" class="nav-button">View Statistics</a>
+    <a id="statsLink" href="stats.html" class="nav-button hidden">View Statistics</a>
     <div class="button-container">
-        <button id="randomBtn">Select</button>
-        <button id="resetBtn">Reset</button>
+        <button id="randomBtn" class="hidden">Select</button>
+        <button id="resetBtn" class="hidden">Reset</button>
         <div id="urlDisplay"></div>
     </div>
-
-
 
     <div class="counters-container">
         <div id="counters"></div>
         <div>Total remaining: <span id="totalCounter">6</span></div>
     </div>
 
-    <div id="status"></div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isAdmin = urlParams.get('role') === 'admin';
+
             const groupsData = {
                 group1: "https://farm.pcibex.net/r/oyxZUa/",
                 group2: "https://farm.pcibex.net/r/IXWmsM/"
@@ -126,8 +126,20 @@
                 resetBtn: document.getElementById('resetBtn'),
                 urlDisplay: document.getElementById('urlDisplay'),
                 totalCounter: document.getElementById('totalCounter'),
-                countersDiv: document.getElementById('counters')
+                countersDiv: document.getElementById('counters'),
+                statsLink: document.getElementById('statsLink')
             };
+
+            // Role-based UI setup
+            if (isAdmin) {
+                elements.resetBtn.classList.remove('hidden');
+                elements.statsLink.classList.remove('hidden');
+            } else {
+                elements.randomBtn.classList.remove('hidden');
+                // Check if participant already selected
+                const hasSelected = localStorage.getItem('participantSelected') === 'true';
+                elements.randomBtn.disabled = hasSelected;
+            }
 
             function updateStorage() {
                 localStorage.setItem('groupTracking', JSON.stringify(trackingData));
@@ -145,7 +157,10 @@
 
             function selectRandomGroup() {
                 const eligibleGroups = trackingData.groups.filter(group => group.remaining > 0);
-                if (eligibleGroups.length === 0) return;
+                if (eligibleGroups.length === 0) {
+                    elements.randomBtn.disabled = true;
+                    return;
+                }
 
                 const randomIndex = Math.floor(Math.random() * eligibleGroups.length);
                 const selectedGroup = eligibleGroups[randomIndex];
@@ -157,7 +172,11 @@
 
                 elements.urlDisplay.innerHTML =
                     `实验链接: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
-                elements.randomBtn.disabled = true;
+                
+                if (!isAdmin) {
+                    localStorage.setItem('participantSelected', 'true');
+                    elements.randomBtn.disabled = true;
+                }
                 updateStorage();
             }
 
@@ -172,17 +191,17 @@
                     })),
                     totalSelections: 0
                 };
+                // Clear participant selection flags
+                localStorage.removeItem('participantSelected');
                 elements.urlDisplay.innerHTML = "";
-                elements.randomBtn.disabled = false;
                 updateStorage();
             }
 
-            // Initial setup
+            // Event listeners
             updateDisplay();
             elements.randomBtn.addEventListener('click', selectRandomGroup);
             elements.resetBtn.addEventListener('click', resetCounters);
         });
     </script>
 </body>
-
 </html>
