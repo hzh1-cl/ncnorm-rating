@@ -44,7 +44,7 @@
             padding: 15px 30px;
             font-size: 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: 8x;
             cursor: pointer;
             background-color: #4caf50;
             color: white;
@@ -129,13 +129,10 @@
             function handleLogin(username) {
                 loginContainer.classList.add('hidden');
                 mainContent.classList.remove('hidden');
-                
-                const isAdmin = username === 'cbs_zhou';
-                initializeApp(isAdmin);
+                initializeApp(username === 'cbs_zhou');
             }
 
             function initializeApp(isAdmin) {
-                // Group data and tracking
                 const groupsData = {
                     group1: "https://farm.pcibex.net/r/oyxZUa/",
                     group2: "https://farm.pcibex.net/r/IXWmsM/"
@@ -161,7 +158,6 @@
                     elements.randomBtn.disabled = localStorage.getItem('userSelected') === 'true';
                 }
 
-                // Update display
                 function updateDisplay() {
                     elements.countersDiv.innerHTML = trackingData.groups
                         .map(group => `${group.name}: ${group.remaining}`)
@@ -170,7 +166,6 @@
                         .reduce((sum, group) => sum + group.remaining, 0);
                 }
 
-                // Selection logic
                 elements.randomBtn.addEventListener('click', () => {
                     const eligibleGroups = trackingData.groups.filter(g => g.remaining > 0);
                     if (eligibleGroups.length === 0) return;
@@ -191,7 +186,6 @@
                     updateDisplay();
                 });
 
-                // Reset logic
                 elements.resetBtn.addEventListener('click', () => {
                     trackingData = {
                         groups: Object.entries(groupsData).map(([name, url]) => ({
