@@ -1,13 +1,8 @@
-<!--selector.html-->
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Select a Group</title>
     <style>
-        /* Added hidden class */
-        .hidden { display: none; }
-        
         body {
             font-family: 'Times New Roman', Times, serif;
             display: flex;
@@ -83,9 +78,12 @@
             text-decoration: none;
             border-radius: 5px;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
-
 <body>
     <a id="statsLink" href="stats.html" class="nav-button hidden">View Statistics</a>
     <div class="button-container">
@@ -101,9 +99,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Determine user role based on URL parameter
             const urlParams = new URLSearchParams(window.location.search);
             const isAdmin = urlParams.get('role') === 'admin';
 
+            // Group data
             const groupsData = {
                 group1: "https://farm.pcibex.net/r/oyxZUa/",
                 group2: "https://farm.pcibex.net/r/IXWmsM/"
@@ -121,6 +121,7 @@
                 totalSelections: 0
             };
 
+            // Get DOM elements
             const elements = {
                 randomBtn: document.getElementById('randomBtn'),
                 resetBtn: document.getElementById('resetBtn'),
@@ -130,15 +131,24 @@
                 statsLink: document.getElementById('statsLink')
             };
 
-            // Role-based UI setup
+            // Set up UI based on user role
             if (isAdmin) {
+                // Admin can see reset button and stats link
                 elements.resetBtn.classList.remove('hidden');
                 elements.statsLink.classList.remove('hidden');
+                elements.randomBtn.classList.add('hidden');
             } else {
+                // Participant can only see select button
                 elements.randomBtn.classList.remove('hidden');
+                elements.resetBtn.classList.add('hidden');
+                elements.statsLink.classList.add('hidden');
+
                 // Check if participant already selected
                 const hasSelected = localStorage.getItem('participantSelected') === 'true';
-                elements.randomBtn.disabled = hasSelected;
+                if (hasSelected) {
+                    elements.randomBtn.disabled = true;
+                    elements.urlDisplay.innerHTML = "You have already selected a group.";
+                }
             }
 
             function updateStorage() {
@@ -173,10 +183,9 @@
                 elements.urlDisplay.innerHTML =
                     `实验链接: <a href="${selectedGroup.url}" target="_blank">${selectedGroup.url}</a>`;
                 
-                if (!isAdmin) {
-                    localStorage.setItem('participantSelected', 'true');
-                    elements.randomBtn.disabled = true;
-                }
+                // Mark participant as having selected
+                localStorage.setItem('participantSelected', 'true');
+                elements.randomBtn.disabled = true;
                 updateStorage();
             }
 
@@ -191,6 +200,7 @@
                     })),
                     totalSelections: 0
                 };
+                
                 // Clear participant selection flags
                 localStorage.removeItem('participantSelected');
                 elements.urlDisplay.innerHTML = "";
