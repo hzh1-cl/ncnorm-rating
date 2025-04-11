@@ -1,39 +1,35 @@
-<!--stats.html-->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Selection Statistics</title>
     <style>
-        /* Add security check styles */
-        .security-message {
-            color: red;
-            text-align: center;
-            margin-top: 50px;
-            font-size: 24px;
-        }
         body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #f2f2f2; }
         .nav-button { 
-            padding: 10px 20px; background-color: #007bff; 
-            color: white; text-decoration: none; border-radius: 5px; 
-            margin-bottom: 20px; display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
         }
-        .hidden { display: none; }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 50px;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
-    <a href="selector.html?role=admin" class="nav-button">Back to Admin</a>
-    <h2>Selection Statistics</h2>
-    <div id="statsContainer"></div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const storedUsername = localStorage.getItem('username');
             if (storedUsername !== 'cbs_zhou') {
                 document.body.innerHTML = `
-                    <div class="security-message">
+                    <div class="error-message">
                         ⚠️ Access Denied: Admin privileges required
                         <br><br>
                         <a href="selector.html">Return to login</a>
@@ -42,48 +38,50 @@
                 return;
             }
 
-            const statsContainer = document.getElementById('statsContainer');
+            const statsContainer = document.createElement('div');
+            statsContainer.id = 'statsContainer';
+            document.body.prepend(statsContainer);
+            
             const trackingData = JSON.parse(localStorage.getItem('groupTracking')) || {};
-
-            if (!trackingData.groups) {
-                statsContainer.innerHTML = "<p>No selection data available.</p>";
-                return;
-            }
-
+            
             let html = `
-                <p>Total selections made: ${trackingData.totalSelections}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Group</th>
-                            <th>Times Selected</th>
-                            <th>Remaining</th>
-                            <th>Last Selected</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-            trackingData.groups.forEach(group => {
-                html += `
-                    <tr>
-                        <td>${group.name}</td>
-                        <td>${group.selectedCount}</td>
-                        <td>${group.remaining}</td>
-                        <td>${group.lastSelected ? new Date(group.lastSelected).toLocaleString() : 'Never'}</td>
-                    </tr>`;
-            });
-
-            html += `</tbody></table>`;
-            statsContainer.innerHTML = html;
-
-            // add admin-specific back link
-            document.body.innerHTML = `
                 <a href="selector.html" class="nav-button">Back to Admin</a>
                 <h2>Selection Statistics</h2>
-                ${document.body.innerHTML}
             `;
+
+            if (!trackingData.groups) {
+                html += "<p>No selection data available.</p>";
+            } else {
+                html += `
+                    <p>Total selections: ${trackingData.totalSelections}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Selected</th>
+                                <th>Remaining</th>
+                                <th>Last Selected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                trackingData.groups.forEach(group => {
+                    html += `
+                        <tr>
+                            <td>${group.name}</td>
+                            <td>${group.selectedCount}</td>
+                            <td>${group.remaining}</td>
+                            <td>${group.lastSelected ? new Date(group.lastSelected).toLocaleString() : 'Never'}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+            }
+
+            statsContainer.innerHTML = html;
         });
     </script>
-    <div id="statsContainer"></div>
 </body>
 </html>
