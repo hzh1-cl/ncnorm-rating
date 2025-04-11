@@ -11,10 +11,23 @@
             margin-top: 50px;
             font-size: 24px;
         }
-        /* ... (keep previous styles) ... */
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .nav-button { 
+            padding: 10px 20px; background-color: #007bff; 
+            color: white; text-decoration: none; border-radius: 5px; 
+            margin-bottom: 20px; display: inline-block; 
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
+    <a href="selector.html?role=admin" class="nav-button">Back to Admin</a>
+    <h2>Selection Statistics</h2>
+    <div id="statsContainer"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const storedUsername = localStorage.getItem('username');
@@ -29,11 +42,41 @@
                 return;
             }
 
-            // Original stats page code
             const statsContainer = document.getElementById('statsContainer');
-            // ... (keep previous stats code) ...
+            const trackingData = JSON.parse(localStorage.getItem('groupTracking')) || {};
 
-            // Add admin-specific back link
+            if (!trackingData.groups) {
+                statsContainer.innerHTML = "<p>No selection data available.</p>";
+                return;
+            }
+
+            let html = `
+                <p>Total selections made: ${trackingData.totalSelections}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Times Selected</th>
+                            <th>Remaining</th>
+                            <th>Last Selected</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            trackingData.groups.forEach(group => {
+                html += `
+                    <tr>
+                        <td>${group.name}</td>
+                        <td>${group.selectedCount}</td>
+                        <td>${group.remaining}</td>
+                        <td>${group.lastSelected ? new Date(group.lastSelected).toLocaleString() : 'Never'}</td>
+                    </tr>`;
+            });
+
+            html += `</tbody></table>`;
+            statsContainer.innerHTML = html;
+
+            // add admin-specific back link
             document.body.innerHTML = `
                 <a href="selector.html" class="nav-button">Back to Admin</a>
                 <h2>Selection Statistics</h2>
