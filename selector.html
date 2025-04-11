@@ -148,6 +148,11 @@
                 if (hasSelected) {
                     elements.randomBtn.disabled = true;
                     elements.urlDisplay.innerHTML = "You have already selected a group.";
+                } else {
+                    // Initialize participantSelected if it doesn't exist
+                    if (!localStorage.getItem('participantSelected')) {
+                        localStorage.setItem('participantSelected', 'false');
+                    }
                 }
             }
 
