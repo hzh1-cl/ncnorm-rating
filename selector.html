@@ -160,15 +160,19 @@
                 localStorage.setItem('groupTracking', JSON.stringify(trackingData));
                 updateDisplay();
             }
-
+            
+        
             function updateDisplay() {
+                /*
                 elements.countersDiv.innerHTML = trackingData.groups.map(group =>
                     `${group.name}: ${group.remaining}`
                 ).join('<br>');
+                */
 
                 elements.totalCounter.textContent =
                     trackingData.groups.reduce((sum, group) => sum + group.remaining, 0);
             }
+            
 
             function selectRandomGroup() {
                 const eligibleGroups = trackingData.groups.filter(group => group.remaining > 0);
